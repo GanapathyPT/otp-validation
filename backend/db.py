@@ -8,6 +8,12 @@ class User:
         self.password = password
         self.verified = False
 
+    def _add_otp(self, otp_data):
+        self.is_otp_in_progress = True
+        self._otp_id = otp_data['otp_id']
+        self._otp_secret = otp_data['otp_secret']
+        self._otp_redirect_url = otp_data['link']
+
     def save(self):
         if self not in User.USERS:
             # adding new user
@@ -16,9 +22,7 @@ class User:
             # updating existing user
             for user in User.USERS:
                 if user.id == self.id:
-                    user.email = self.email
-                    user.username = self.username
-                    user.password = self.password
+                    user = self
                     break
 
     @classmethod
