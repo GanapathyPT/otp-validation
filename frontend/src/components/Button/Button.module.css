@@ -1,0 +1,26 @@
+.button {
+  padding: 0.5em 1em;
+  outline: none;
+  border: none;
+  border-radius: 0.25em;
+  font-size: 1.000001em;
+  cursor: pointer;
+}
+
+button:hover {
+  box-shadow: inset 0em 0em 0em 10em rgba(0, 0, 0, 0.3);
+}
+
+.button[data-width="true"] {
+  width: 100%;
+}
+
+.button[data-center="true"] {
+  display: block;
+  margin: 0 auto;
+}
+
+.button[data-color="primary"] {
+  background: var(--primary);
+  color: #fff;
+}
