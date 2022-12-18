@@ -7,22 +7,23 @@ app = Flask(__name__)
 def hello_world():
     return 'Hello World!'
 
-@app.route('/api/auth/register')
+@app.route('/api/auth/register', methods=['POST'])
 def register():
-    email = request.data.get('email', None)
-    username = request.data.get('username', None)
-    password = request.data.get('password', None)
+    data = request.get_json()
+    email = data.get('email', None)
+    username = data.get('username', None)
+    password = data.get('password', None)
 
     if not email or not username or not password:
-        return 'Invalid Data', 400
+        return {'message':'Invalid Data'}, 400
 
     if User.find_by_email(email):
-        return 'User already exists', 400
+        return {'message':'User already exists'}, 400
 
     user = User(email, username, password)
     user.save()
 
-    return 'User Created', 201
+    return {'message':'User Created'}, 201
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
