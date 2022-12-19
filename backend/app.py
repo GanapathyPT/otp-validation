@@ -7,6 +7,7 @@ from os import environ
 
 app = Flask(__name__,static_folder="static/assets",template_folder="static")
 PORT = environ.get("PORT")
+DEBUG = environ.get("DEBUG", False)
 
 @app.route('/')
 def index():
