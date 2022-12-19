@@ -2,7 +2,7 @@
 
 # clear old build
 cd ./backend
-rm -r static
+if [ -d ./static ]; then rm -r static; fi
 mkdir static
 # build frontend
 cd ../frontend
