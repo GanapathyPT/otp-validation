@@ -1,16 +1,16 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 from db import User
 from otp import send_otp
 from jwt_token import generate_token
 from middleware import auth_middleware
-from dotenv import load_dotenv
 from os import environ
 
-load_dotenv()
-
-app = Flask(__name__)
+app = Flask(__name__,static_folder="static/assets",template_folder="static")
 PORT = environ.get("PORT")
-DEBUG = environ.get("DEBUG")
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/api')
 def hello_world():
@@ -100,4 +100,4 @@ def me(user):
     return user.json(), 200
 
 if __name__ == '__main__':
-    app.run(debug=DEBUG == "True", port=PORT)
+    app.run(debug=True, port=PORT)

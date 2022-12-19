@@ -13,25 +13,27 @@ export function Home() {
       <div>
         <h3>Your Data:</h3>
         <table border={1}>
-          <tr>
-            <th>ID</th>
-            <td>{user?.id}</td>
-          </tr>
+          <tbody>
+            <tr>
+              <th>ID</th>
+              <td>{user?.id}</td>
+            </tr>
 
-          <tr>
-            <th>Username</th>
-            <td>{user?.username}</td>
-          </tr>
+            <tr>
+              <th>Username</th>
+              <td>{user?.username}</td>
+            </tr>
 
-          <tr>
-            <th>Email</th>
-            <td>{user?.email}</td>
-          </tr>
+            <tr>
+              <th>Email</th>
+              <td>{user?.email}</td>
+            </tr>
 
-          <tr>
-            <th>Verified</th>
-            <td>{user?.verified ? "Yes" : "No"}</td>
-          </tr>
+            <tr>
+              <th>Verified</th>
+              <td>{user?.verified ? "Yes" : "No"}</td>
+            </tr>
+          </tbody>
         </table>
       </div>
       <Button color="secondary" onClick={logout}>
