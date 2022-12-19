@@ -29,8 +29,11 @@ def register():
 
     user = User(email, username, password)
     redirect_url = send_otp(user)
-    user.save()
 
+    if not redirect_url:
+        return {'message': 'Failed to send OTP'}, 400
+
+    user.save()
     return {'otp_url': redirect_url}, 201
 
 @app.route('/api/otp/verify', methods=['POST'])
@@ -53,6 +56,8 @@ def verify_otp():
             user.is_otp_in_progress = False
             user.save()
             return {'message':'OTP verified'}, 200
+
+    return {'message':'OTP verification failed'}, 400
 
 if __name__ == '__main__':
     app.run(debug=DEBUG == "True", port=PORT)
