@@ -5,10 +5,21 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  position: relative;
 }
 
 .layout div {
   display: flex;
   flex-direction: column;
   gap: 0.5em;
+}
+
+.layout table {
+  border-collapse: collapse;
+}
+
+.layout table td,
+.layout table th {
+  text-align-last: left;
+  padding: 0.1em 1em;
 }

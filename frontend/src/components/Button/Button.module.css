@@ -5,6 +5,7 @@
   border-radius: 0.25em;
   font-size: 1.000001em;
   cursor: pointer;
+  transition: box-shadow 0.3s;
 }
 
 button:hover {
@@ -23,4 +24,8 @@ button:hover {
 .button[data-color="primary"] {
   background: var(--primary);
   color: #fff;
+}
+
+.button[data-color="secondary"] {
+  background: var(--secondary);
 }
