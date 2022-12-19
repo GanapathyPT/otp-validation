@@ -88,6 +88,8 @@ def login():
         
         redirect_url = send_otp(user)
         if not redirect_url:
+            user.is_otp_in_progress = False
+            user.save()
             return {'message': 'Failed to send OTP'}, 400
 
         user.save()
