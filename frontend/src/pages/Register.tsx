@@ -1,9 +1,12 @@
+import { Link } from "react-router-dom";
 import { Button } from "../components/Button/Button";
 import { Input } from "../components/Input/Input";
+import { useAuth } from "../hooks/useAuth";
 import { useFetch } from "../hooks/useFetch";
 import { AuthLayout } from "../layouts/AuthLayout";
 
 export function Register() {
+  useAuth(false, true);
   const {
     loading,
     error,
@@ -14,7 +17,7 @@ export function Register() {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const body = Object.fromEntries(formData);
-    const data = await register("POST", body);
+    const data = await register("POST", null, body);
     if (data) window.location.href = data.otp_url;
   };
 
@@ -25,9 +28,12 @@ export function Register() {
         <Input type="email" name="email" label="Email" />
         <Input type="password" name="password" label="Password" />
         <Button type="submit" color="primary" center>
-          Verify Email and Register
+          Register
         </Button>
       </form>
+      <small>
+        Already have an account? <Link to="/login">Login</Link>
+      </small>
     </AuthLayout>
   );
 }

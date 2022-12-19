@@ -7,6 +7,7 @@ export function useFetch<T>(url: string) {
 
   const fetchData = async (
     method: RequestInit["method"],
+    token: string | null = null,
     data?: any
   ): Promise<null | T> => {
     setError(undefined);
@@ -17,6 +18,9 @@ export function useFetch<T>(url: string) {
         url,
         method,
         data,
+        headers: {
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
       });
     } catch (error) {
       const errMessage =
