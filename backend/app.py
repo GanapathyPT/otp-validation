@@ -1,6 +1,8 @@
 from flask import Flask, request
 from db import User
 from otp import send_otp
+from jwt_token import generate_token
+from middleware import auth_middleware
 from dotenv import load_dotenv
 from os import environ
 
@@ -28,6 +30,10 @@ def register():
         return {'message':'User already exists'}, 400
 
     user = User(email, username, password)
+    if DEBUG:
+        user.save()
+        return {'otp_url': '/otp-success'}, 201
+
     redirect_url = send_otp(user)
 
     if not redirect_url:
@@ -58,6 +64,40 @@ def verify_otp():
             return {'message':'OTP verified'}, 200
 
     return {'message':'OTP verification failed'}, 400
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get('email', None)
+    password = data.get('password', None)
+
+    if not email or not password:
+        return {'message':'Invalid Data'}, 400
+
+    user = User.find_by_email(email)
+    if not user:
+        return {'message':'User not found'}, 404
+
+    if user.verify_password(password):
+        if user.verified or DEBUG:
+            return {'verified': True, 'token': generate_token(user)}, 200
+
+        if user.is_otp_in_progress:
+            return {'verified': False, 'otp_url': user._otp_redirect_url}, 200
+        
+        redirect_url = send_otp(user)
+        if not redirect_url:
+            return {'message': 'Failed to send OTP'}, 400
+
+        user.save()
+        return {'verified': False, 'otp_url': redirect_url}, 200
+
+    return {'message':'Invalid Credentials'}, 401
+
+@app.route('/api/me')
+@auth_middleware
+def me(user):
+    return user.json(), 200
 
 if __name__ == '__main__':
     app.run(debug=DEBUG == "True", port=PORT)
