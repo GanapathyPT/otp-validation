@@ -1,25 +1,23 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-export function useFetch<T>(
-  url: string,
-  method?: RequestInit["method"],
-  returnFn = false
-) {
+export function useFetch<T>(url: string) {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<T>();
   const [error, setError] = useState<string>();
 
-  const fetchData = async (data?: any) => {
+  const fetchData = async (
+    method: RequestInit["method"],
+    data?: any
+  ): Promise<null | T> => {
     setError(undefined);
     setLoading(true);
+    let response = null;
     try {
-      const response = await axios.request({
+      response = await axios.request({
         url,
         method,
         data,
       });
-      setData(response.data);
     } catch (error) {
       const errMessage =
         (error as any)?.response?.data?.message || String(error);
@@ -27,15 +25,12 @@ export function useFetch<T>(
     } finally {
       setLoading(false);
     }
-  };
 
-  useEffect(() => {
-    if (!returnFn) fetchData();
-  }, [url, method, returnFn]);
+    return response?.data;
+  };
 
   return {
     loading,
-    data,
     error,
     fetchData,
   };

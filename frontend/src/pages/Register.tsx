@@ -8,13 +8,14 @@ export function Register() {
     loading,
     error,
     fetchData: register,
-  } = useFetch("/api/auth/register", "POST", true);
+  } = useFetch<{ otp_url: string }>("/api/auth/register");
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const body = Object.fromEntries(data);
-    register(body);
+    const formData = new FormData(event.currentTarget);
+    const body = Object.fromEntries(formData);
+    const data = await register("POST", body);
+    if (data) window.location.href = data.otp_url;
   };
 
   return (
@@ -24,7 +25,7 @@ export function Register() {
         <Input type="email" name="email" label="Email" />
         <Input type="password" name="password" label="Password" />
         <Button type="submit" color="primary" center>
-          Register
+          Verify Email and Register
         </Button>
       </form>
     </AuthLayout>
