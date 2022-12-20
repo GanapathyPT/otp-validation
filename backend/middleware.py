@@ -4,7 +4,7 @@ from db import User
 
 def auth_middleware(func):
     def wrapper(*args, **kwargs):
-        token = request.headers.get('Authorization', None)
+        token: str = request.headers.get('Authorization', None)
         if not token or not token.startswith('Bearer '):
             return {'message':'Token is missing'}, 401
 

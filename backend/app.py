@@ -36,11 +36,9 @@ def register():
         return {'otp_url': '/otp-success'}, 201
 
     redirect_url = send_otp(user)
-
     if not redirect_url:
         return {'message': 'Failed to send OTP'}, 400
 
-    user.save()
     return {'otp_url': redirect_url}, 201
 
 @app.route('/api/otp/verify', methods=['POST'])
@@ -51,17 +49,14 @@ def verify_otp():
     otp_secret = data.get('otp_secret', None)
     auth_status = data.get('auth_status', None)
 
-    user = User.find_by_email(email)
+    if not otp_id or not email or not otp_secret or not auth_status:
+        return {'message':'Invalid Data'}, 400
+
+    user: User = User.find_by_email(email)
     if not user:
         return {'message':'User not found'}, 404
 
-    if user.is_otp_in_progress and  \
-        auth_status == "verified" and \
-        otp_secret == user._otp_secret and \
-        otp_id == user._otp_id:
-            user.verified = True
-            user.is_otp_in_progress = False
-            user.save()
+    if user.verify_otp(otp_id, otp_secret, auth_status):
             return {'message':'OTP verified'}, 200
 
     return {'message':'OTP verification failed'}, 400
@@ -75,35 +70,32 @@ def login():
     if not email or not password:
         return {'message':'Invalid Data'}, 400
 
-    user = User.find_by_email(email)
+    user: User = User.find_by_email(email)
     if not user:
         return {'message':'User not found'}, 404
 
     if user.verify_password(password):
-        if user.verified or DEBUG:
+        if user.is_verified or DEBUG:
             return {'verified': True, 'token': generate_token(user)}, 200
 
         if user.is_otp_in_progress:
-            return {'verified': False, 'otp_url': user._otp_redirect_url}, 200
+            return {'verified': False, 'otp_url': user.get_otp_redirect_url()}, 200
         
         redirect_url = send_otp(user)
         if not redirect_url:
-            user.is_otp_in_progress = False
-            user.save()
             return {'message': 'Failed to send OTP'}, 400
 
-        user.save()
         return {'verified': False, 'otp_url': redirect_url}, 200
 
     return {'message':'Invalid Credentials'}, 401
 
 @app.route('/api/me')
 @auth_middleware
-def me(user):
+def me(user: User):
     return user.json(), 200
 
 @app.errorhandler(404)
-def page_not_found(e):
+def page_not_found(_):
     return render_template('index.html')
 
 if __name__ == '__main__':

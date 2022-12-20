@@ -8,7 +8,7 @@ GETOTP_AUTH_TOKEN = environ.get("GETOTP_AUTH_TOKEN")
 
 OTP_URL = "https://otp.dev/api/"
 
-def send_otp(user: User):
+def send_otp(user: User) -> str:
     files = {
         'channel': (None, 'email'),
         'email': (None, user.email),
@@ -21,7 +21,10 @@ def send_otp(user: User):
     data = post(OTP_URL + "verify/", files=files, auth=(GETOTP_API_KEY, GETOTP_AUTH_TOKEN))
     data = data.json()
     if data.get("otp_id") is None:
+        user.remove_otp()
+        user.save()
         return None
 
-    user._add_otp(data)
+    user.add_otp(data.get('otp_id'), data.get('otp_secret'), data.get('link'))
+    user.save()
     return data.get("link")

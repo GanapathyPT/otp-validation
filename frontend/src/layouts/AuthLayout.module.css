@@ -5,6 +5,7 @@
   height: 100vh;
   width: 100vw;
   position: relative;
+  overflow: hidden;
 }
 
 .container img {
@@ -61,4 +62,10 @@
 
 .container .authCard form {
   margin-bottom: 1em;
+}
+
+@media (max-width: 1000px) {
+  .container img {
+    display: none;
+  }
 }
